@@ -1,0 +1,146 @@
+\documentclass{beamer}
+\usepackage[russian,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+
+
+\begin{document}
+
+\title{Why systemd?}
+\author{Maksim 'max\_posedon' Melnikau}
+\institute{Linux Mobile hobbyist\\World of Tanks developer}
+\date{\today}
+\frame{\titlepage}
+
+\begin{frame}[fragile]
+    \frametitle{fast boot}
+    \begin{block}{/etc/fstab}
+    \begin{verbatim}
+UUID=... /boot ext4 comment=systemd.automount 0 2
+UUID=... /home ext4 comment=systemd.automount 0 2
+    \end{verbatim}
+    \end{block}
+    \begin{block}{socket activation}
+    \begin{itemize}
+        \item create the communication sockets
+        \item start background services
+        \item pass sockets to the services while launching
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{unification}
+    \begin{block}{service files}
+    Same in Fedora, SUSE, Gentoo, Debian, openembedded, ...
+    \end{block}
+
+    \begin{columns}[t]
+        \column{0.45\textwidth}
+            \begin{block}{/etc/hostname}
+                \begin{verbatim}
+m_melnikau
+                \end{verbatim}
+            \end{block}
+            \begin{block}{/etc/os-release}
+                \begin{verbatim}
+NAME=Gentoo
+ID=gentoo
+PRETTY_NAME="Gentoo Linux"
+ANSI_COLOR=1;32
+                \end{verbatim}
+            \end{block}
+
+        \column{0.45\textwidth}\begin{block}{/etc/locale.conf}
+                \begin{verbatim}
+LANG=en_US.UTF-8
+                \end{verbatim}
+            \end{block}
+            \begin{block}{/etc/vconsole.conf}
+                \begin{verbatim}
+KEYMAP=us
+FONT=default8x16
+                \end{verbatim}
+            \end{block}
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{simple service files}
+    \begin{block}{/etc/systemd/system/graphical.target.wants/bumblebeed.service}
+        \begin{verbatim}
+[Unit]
+Description=Bumblebee C Daemon
+
+[Service]
+Type=simple
+CPUSchedulingPolicy=idle
+ExecStart=/usr/sbin/bumblebeed
+Restart=always
+RestartSec=60
+StandardOutput=kmsg
+
+[Install]
+WantedBy=graphical.target
+        \end{verbatim}
+    \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{cgroups integration}
+    \begin{block}{systemd-cgtop}
+        \begin{verbatim}
+Path                                    Tasks   %CPU
+/                                         477   27.0
+/system                                     1   26.5
+/system/kdm@.service                        -   25.2
+/system/rabbitmq-server.service            44    0.7
+/system/dbus.service                       12    0.3
+/system/NetworkManager.service              4    0.2
+/system/mysqld.service                     16    0.1
+/system/avahi-daemon.service                2    0.0
+/system/console-kit-daemon.service         65      -
+/system/rtkit-daemon.service                3      -
+/system/systemd-journald.service            1      -
+/system/systemd-logind.service              1      -
+/system/udev.service                        3      -
+        \end{verbatim}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{improved logs}
+    \begin{block}{systemd-journalctl -o verbose \_PID=11937}
+        \begin{verbatim}
+PRIORITY=4
+SYSLOG_FACILITY=1
+SYSLOG_IDENTIFIER=org.kde.powerdevil.backlighthelper
+MESSAGE=QDBusConnection: ... Application may misbehave.
+_TRANSPORT=syslog
+_PID=11937
+_UID=0
+_GID=0
+_COMM=backlighthelper
+_EXE=/usr/lib64/kde4/libexec/backlighthelper
+_CMDLINE=/usr/lib64/kde4/libexec/backlighthelper
+_SYSTEMD_CGROUP=/system/dbus.service
+_SYSTEMD_UNIT=dbus.service
+_SOURCE_REALTIME_TIMESTAMP=1335685169367215
+_BOOT_ID=083530b34e7547e48fcfe7be0726fa3f
+        \end{verbatim}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{info}
+    \begin{itemize}
+    \item Maksim 'max\_posedon' Melnikau maxposedon@gmail.com
+    \item http://www.freedesktop.org/wiki/Software/systemd
+    \item http://0pointer.de/blog
+    \end{itemize}
+\end{frame}
+
+
+\end{document}
